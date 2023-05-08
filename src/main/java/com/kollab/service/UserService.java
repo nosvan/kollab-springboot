@@ -5,7 +5,7 @@ import com.kollab.entity.User;
 
 import java.util.List;
 
-public interface UserInterface {
+public interface UserService {
     void saveUser(UserDto userDto);
 
     User findUserByEmail(String email);
