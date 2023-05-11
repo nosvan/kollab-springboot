@@ -5,21 +5,22 @@ import com.kollab.entity.Role;
 import com.kollab.entity.User;
 import com.kollab.repository.RoleRepository;
 import com.kollab.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 public class UserServiceImpl implements UserService {
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository,
-                           RoleRepository roleRepository,
-                           PasswordEncoder passwordEncoder) {
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -46,7 +47,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> findAllUsers() {
-        return null;
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(this::mapUserToUserDto)
+                .collect(Collectors.toList());
+    }
+
+    public UserDto mapUserToUserDto(User user){
+        UserDto userDto = new UserDto();
+        String[] name = user.getName().split(",");
+        userDto.setFirstName(name[0]);
+        userDto.setLastName(name[1]);
+        userDto.setEmail(user.getEmail());
+        return userDto;
     }
 
     private Role checkRoleExist(){

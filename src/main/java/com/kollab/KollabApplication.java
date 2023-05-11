@@ -12,15 +12,4 @@ public class KollabApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(KollabApplication.class, args);
 	}
-
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedMethods("GET", "PUT", "POST", "DELETE").allowedOrigins("*");
-			}
-		};
-	}
-
 }
