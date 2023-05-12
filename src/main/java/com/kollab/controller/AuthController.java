@@ -44,13 +44,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> RegisterUser(@Valid UserDto model){
+    public ResponseEntity<?> RegisterUser(@RequestBody @Valid UserDto registeringUser){
         System.out.println("in register controller");
-        User existingUser = userServiceImpl.findUserByEmail(model.getEmail());
-        if(existingUser != null && existingUser.getEmail() != null && existingUser.getEmail().isEmpty()){
+        User existingUser = userServiceImpl.findUserByEmail(registeringUser.getEmail());
+        if(existingUser != null){
             return new ResponseEntity<>("User already exists", HttpStatus.CONFLICT);
         }
-        userServiceImpl.saveUser(model);
+        userServiceImpl.saveUser(registeringUser);
         return new ResponseEntity<>("User created", HttpStatus.OK);
     }
 

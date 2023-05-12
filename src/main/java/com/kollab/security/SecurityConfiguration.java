@@ -29,7 +29,7 @@ public class SecurityConfiguration {
                 .httpBasic().disable()
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/register", "/login").permitAll()
-                        .requestMatchers("/api/**").fullyAuthenticated())
+                        .requestMatchers("/**").fullyAuthenticated())
                 .logout().deleteCookies("SESSION").clearAuthentication(true).invalidateHttpSession(true).logoutSuccessUrl("/logoutSuccess").permitAll();
         return http.build();
     }
