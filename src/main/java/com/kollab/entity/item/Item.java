@@ -30,32 +30,45 @@ public class Item {
     @Enumerated(EnumType.STRING)
     private Category category;
     @Nullable
-    private Long category_id;
+    @Column(name = "category_id")
+    private Long categoryId;
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'GENERAL'")
-    private ItemType item_type;
+    @Column(name = "item_type")
+    private ItemType itemType;
     @Nullable
-    private Date date_tz_sensitive;
+    @Column(name = "date_tz_sensitive")
+    private Date dateTzSensitive;
     @Nullable
-    private Date date_tz_sensitive_end;
+    @Column(name = "date_tz_sensitive_end")
+    private Date dateTzSensitiveEnd;
     @ColumnDefault("'false'")
-    private Boolean time_sensitive_flag;
+    @Column(name = "time_sensitive_flag")
+    private Boolean timeSensitiveFlag;
     @ColumnDefault("'false'")
-    private Boolean date_range_flag;
+    @Column(name = "date_range_flag")
+    private Boolean dateRangeFlag;
     @Nullable
-    private String date_tz_insensitive;
+    @Column(name = "date_tz_insensitive")
+    private String dateTzInsensitive;
     @Nullable
-    private String date_tz_insensitive_end;
+    @Column(name = "date_tz_insensitive_end")
+    private String dateTzInsensitiveEnd;
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'PUBLIC'")
-    private VisibilityLevel permission_level;
-    private Long created_by_id;
-    private Long last_modified_by_id;
+    @Column(name = "permission_level")
+    private VisibilityLevel permissionLevel;
+    @Column(name = "created_by_id")
+    private Long createdById;
+    @Column(name = "last_modified_by_id")
+    private Long lastModifiedById;
     @CreationTimestamp
-    private Date created_at;
-    @OneToMany
+    @Column(name = "created_at")
+    private Date createdAt;
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="item_id", referencedColumnName = "id")
-    private List<ItemPermission> item_permissions;
+    @Column(name = "item_permissions")
+    private List<ItemPermission> itemPermissions;
     @ColumnDefault("'true'")
     private Boolean active;
 }

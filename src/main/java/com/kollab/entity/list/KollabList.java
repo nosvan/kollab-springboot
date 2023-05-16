@@ -24,14 +24,16 @@ public class KollabList {
     private String name;
     @Nullable
     private String description;
-    private Integer owner_id;
+    @Column(name="owner_id")
+    private Long ownerId;
     private String passcode;
-    private Date created_at;
-    @OneToMany
+    @Column(name="created_at")
+    private Date createdAt;
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="list_id", referencedColumnName = "id")
-    private List<ListPermission> list_permissions;
-    @OneToMany
-    @JoinColumn(name="list_id", referencedColumnName = "id")
+    private List<ListPermission> listPermissions;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="category_id", referencedColumnName = "id")
     private List<Item> items;
 
 }

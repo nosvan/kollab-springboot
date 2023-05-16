@@ -1,4 +1,4 @@
-package com.kollab.dto;
+package com.kollab.dto.item;
 
 import com.kollab.entity.Category;
 import com.kollab.entity.item.ItemType;
@@ -24,21 +24,21 @@ public class ItemDto implements Serializable {
     private String name;
     private String description;
     private Category category;
-    private Long category_id;
+    private Long categoryId;
     @NotNull
-    private ItemType item_type;
-    private Date date_tz_sensitive;
-    private Date date_tz_sensitive_end;
+    private ItemType itemType;
+    private Date dateTzSensitive;
+    private Date dateTzSensitiveEnd;
     @NotNull
-    private Boolean time_sensitive_flag;
+    private Boolean timeSensitiveFlag;
     @NotNull
-    private Boolean date_range_flag;
-    private String date_tz_insensitive;
-    private String date_tz_insensitive_end;
+    private Boolean dateRangeFlag;
+    private String dateTzInsensitive;
+    private String dateTzInsensitiveEnd;
     @NotNull
-    private VisibilityLevel permission_level;
-    private Long created_by_id;
-    private Long last_modified_by_id;
-    private Date created_at;
+    private VisibilityLevel permissionLevel;
+    private Long createdById;
+    private Long lastModifiedById;
+    private Date createdAt;
     private Boolean active;
 }

@@ -24,11 +24,13 @@ public class ListPermission {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    private Long list_id;
-    @OneToOne
+    @Column(name="list_id")
+    private Long listId;
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id", referencedColumnName = "list_id")
     private KollabList list;
-    private Long user_id;
+    @Column(name="user_id")
+    private Long userId;
     @OneToOne
     @JoinColumn(name="id", referencedColumnName = "user_id")
     private User user;
@@ -36,5 +38,6 @@ public class ListPermission {
     @ColumnDefault("'PUBLIC'")
     private AccessLevel permission;
     @CreationTimestamp
-    private Date created_at;
+    @Column(name="created_at")
+    private Date createdAt;
 }

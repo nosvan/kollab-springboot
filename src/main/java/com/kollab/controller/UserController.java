@@ -1,10 +1,7 @@
 package com.kollab.controller;
 
-import com.kollab.dto.UserDto;
+import com.kollab.dto.user.UserDto;
 import com.kollab.service.UserServiceImpl;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +20,7 @@ public class UserController {
     }
 
     @GetMapping("/api/users")
-    public ResponseEntity<?> getUsers(HttpSession session){
+    public ResponseEntity<?> getUsers(){
         System.out.println("in users controller");
         List<UserDto> users = userServiceImpl.findAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);

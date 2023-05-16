@@ -1,71 +1,149 @@
 package com.kollab.service;
 
-import com.kollab.dto.ItemDto;
+import com.kollab.dto.item.ItemDeleteDto;
+import com.kollab.dto.item.ItemDto;
+import com.kollab.dto.item.ItemUpdateDto;
 import com.kollab.entity.item.Item;
 import com.kollab.repository.ItemRepository;
 import com.kollab.security.CustomUserDetails;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.List;
+import java.util.Optional;
 
 @Configuration
 public class ItemService {
     private final ItemRepository itemRepository;
-    @Autowired
-    private UserServiceImpl userServiceImpl;
 
     public ItemService(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
     }
 
-    public void saveItem(ItemDto itemDto) {
+    public Item getItem(String itemId) throws Exception {
+        Optional<Item> item = itemRepository.findById(Long.valueOf(itemId));
+        if(item.isPresent()){
+            return item.get();
+        } else {
+            throw new Exception("Error getting items");
+        }
+    }
+
+    public List<Item> getItems() throws Exception {
+        try {
+            CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return itemRepository.findByCreatedByIdAndCategoryIdIsNull(customUserDetails.getId());
+        } catch (Exception exception){
+            throw new Exception("Error getting items");
+        }
+    }
+
+    public ItemDto saveItem(ItemDto itemDto) {
         CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Item itemToSave = mapDtoToItem(itemDto);
-        itemToSave.setCreated_by_id(userServiceImpl.findUserByEmail(customUserDetails.getEmail()).getId());
-        itemRepository.save(itemToSave);
+        itemToSave.setCreatedById(customUserDetails.getId());
+        itemToSave.setActive(true);
+        validateItem(itemToSave);
+        return mapItemToItemDto(itemRepository.save(itemToSave));
+    }
+
+    public void updateItem(ItemUpdateDto itemUpdateDto) throws Exception{
+        CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<Item> itemToUpdate = itemRepository.findById(itemUpdateDto.getId());
+        if(itemToUpdate.isPresent()){
+            Item item = itemToUpdate.get();
+            mapUpdateDtoToItem(item, itemUpdateDto);
+            item.setLastModifiedById(customUserDetails.getId());
+            itemRepository.save(item);
+        } else {
+            throw new Exception("Error updating item");
+        }
+    }
+
+    public void deleteItem(String itemId) throws Exception {
+        Optional<Item> itemToUpdate = itemRepository.findById(Long.valueOf(itemId));
+        if(itemToUpdate.isPresent()){
+            itemRepository.deleteById(itemToUpdate.get().getId());
+        } else {
+            throw new Exception("Error deleting item");
+        }
+    }
+
+    private void validateItem(Item item){
+        if(item.getTimeSensitiveFlag()){
+            item.setDateTzInsensitive(null);
+            item.setDateTzInsensitiveEnd(null);
+        } else {
+            item.setDateTzSensitive(null);
+            item.setDateTzSensitiveEnd(null);
+        }
+        if(!item.getDateRangeFlag()){
+            item.setDateTzInsensitiveEnd(null);
+            item.setDateTzSensitiveEnd(null);
+        }
     }
 
     private Item mapDtoToItem(ItemDto itemDto) {
         Item newItem = new Item();
-        newItem.setId(itemDto.getId());
-        newItem.setName(itemDto.getName());
-        newItem.setDescription(itemDto.getDescription());
-        newItem.setCategory(itemDto.getCategory());
-        newItem.setCategory_id(itemDto.getCategory_id());
-        newItem.setItem_type(itemDto.getItem_type());
-        newItem.setDate_tz_sensitive(itemDto.getDate_tz_sensitive());
-        newItem.setDate_tz_sensitive_end(itemDto.getDate_tz_sensitive_end());
-        newItem.setTime_sensitive_flag(itemDto.getTime_sensitive_flag());
-        newItem.setDate_range_flag(itemDto.getDate_range_flag());
-        newItem.setDate_tz_insensitive(itemDto.getDate_tz_insensitive());
-        newItem.setDate_tz_insensitive_end(itemDto.getDate_tz_insensitive_end());
-        newItem.setPermission_level(itemDto.getPermission_level());
-        newItem.setCreated_by_id(itemDto.getCreated_by_id());
-        newItem.setLast_modified_by_id(itemDto.getLast_modified_by_id());
-        newItem.setCreated_at(itemDto.getCreated_at());
-        newItem.setActive(itemDto.getActive());
+        if(itemDto.getId() != null) newItem.setId(itemDto.getId());
+        if(itemDto.getName() != null) newItem.setName(itemDto.getName());
+        if(itemDto.getDescription() != null) newItem.setName(itemDto.getDescription());
+        if(itemDto.getCategory() != null) newItem.setCategory(itemDto.getCategory());
+        if(itemDto.getCategoryId() != null) newItem.setCategoryId(itemDto.getCategoryId());
+        if(itemDto.getItemType() != null) newItem.setItemType(itemDto.getItemType());
+        if(itemDto.getDateTzSensitive() != null) newItem.setDateTzSensitive(itemDto.getDateTzSensitive());
+        if(itemDto.getDateTzSensitiveEnd() != null) newItem.setDateTzSensitiveEnd(itemDto.getDateTzSensitiveEnd());
+        if(itemDto.getTimeSensitiveFlag() != null) newItem.setTimeSensitiveFlag(itemDto.getTimeSensitiveFlag());
+        if(itemDto.getDateRangeFlag() != null) newItem.setDateRangeFlag(itemDto.getDateRangeFlag());
+        if(itemDto.getDateTzInsensitive() != null) newItem.setDateTzInsensitive(itemDto.getDateTzInsensitive());
+        if(itemDto.getDateTzInsensitiveEnd() != null) newItem.setDateTzInsensitiveEnd(itemDto.getDateTzInsensitiveEnd());
+        if(itemDto.getPermissionLevel() != null) newItem.setPermissionLevel(itemDto.getPermissionLevel());
+        if(itemDto.getCreatedById() != null) newItem.setCreatedById(itemDto.getCreatedById());
+        if(itemDto.getLastModifiedById() != null) newItem.setLastModifiedById(itemDto.getLastModifiedById());
+        if(itemDto.getCreatedAt() != null) newItem.setCreatedAt(itemDto.getCreatedAt());
+        if(itemDto.getActive() != null) newItem.setActive(itemDto.getActive());
         return newItem;
+    }
+
+    private void mapUpdateDtoToItem(Item item, ItemUpdateDto itemUpdateDto) {
+        if(itemUpdateDto.getId() != null) item.setId(itemUpdateDto.getId());
+        if(itemUpdateDto.getName() != null) item.setName(itemUpdateDto.getName());
+        if(itemUpdateDto.getDescription() != null) item.setName(itemUpdateDto.getDescription());
+        if(itemUpdateDto.getCategory() != null) item.setCategory(itemUpdateDto.getCategory());
+        if(itemUpdateDto.getCategoryId() != null) item.setCategoryId(itemUpdateDto.getCategoryId());
+        if(itemUpdateDto.getItemType() != null) item.setItemType(itemUpdateDto.getItemType());
+        if(itemUpdateDto.getDateTzSensitive() != null) item.setDateTzSensitive(itemUpdateDto.getDateTzSensitive());
+        if(itemUpdateDto.getDateTzSensitiveEnd() != null) item.setDateTzSensitiveEnd(itemUpdateDto.getDateTzSensitiveEnd());
+        if(itemUpdateDto.getTimeSensitiveFlag() != null) item.setTimeSensitiveFlag(itemUpdateDto.getTimeSensitiveFlag());
+        if(itemUpdateDto.getDateRangeFlag() != null) item.setDateRangeFlag(itemUpdateDto.getDateRangeFlag());
+        if(itemUpdateDto.getDateTzInsensitive() != null) item.setDateTzInsensitive(itemUpdateDto.getDateTzInsensitive());
+        if(itemUpdateDto.getDateTzInsensitive_end() != null) item.setDateTzInsensitiveEnd(itemUpdateDto.getDateTzInsensitive_end());
+        if(itemUpdateDto.getPermissionLevel() != null) item.setPermissionLevel(itemUpdateDto.getPermissionLevel());
+        if(itemUpdateDto.getCreatedById() != null) item.setCreatedById(itemUpdateDto.getCreatedById());
+        if(itemUpdateDto.getLastModifiedById() != null) item.setLastModifiedById(itemUpdateDto.getLastModifiedById());
+        if(itemUpdateDto.getCreatedAt() != null) item.setCreatedAt(itemUpdateDto.getCreatedAt());
+        if(itemUpdateDto.getActive() != null) item.setActive(itemUpdateDto.getActive());
     }
 
     private ItemDto mapItemToItemDto(Item item) {
         ItemDto newItemDto = new ItemDto();
-        newItemDto.setId(item.getId());
-        newItemDto.setName(item.getName());
-        newItemDto.setDescription(item.getDescription());
-        newItemDto.setCategory(item.getCategory());
-        newItemDto.setCategory_id(item.getCategory_id());
-        newItemDto.setItem_type(item.getItem_type());
-        newItemDto.setDate_tz_sensitive(item.getDate_tz_sensitive());
-        newItemDto.setDate_tz_sensitive_end(item.getDate_tz_sensitive_end());
-        newItemDto.setTime_sensitive_flag(item.getTime_sensitive_flag());
-        newItemDto.setDate_range_flag(item.getDate_range_flag());
-        newItemDto.setDate_tz_insensitive(item.getDate_tz_insensitive());
-        newItemDto.setDate_tz_insensitive_end(item.getDate_tz_insensitive_end());
-        newItemDto.setPermission_level(item.getPermission_level());
-        newItemDto.setCreated_by_id(item.getCreated_by_id());
-        newItemDto.setLast_modified_by_id(item.getLast_modified_by_id());
-        newItemDto.setCreated_at(item.getCreated_at());
-        newItemDto.setActive(item.getActive());
+        if(item.getId() != null) newItemDto.setId(item.getId());
+        if(item.getName() != null) newItemDto.setName(item.getName());
+        if(item.getDescription() != null) newItemDto.setName(item.getDescription());
+        if(item.getCategory() != null) newItemDto.setCategory(item.getCategory());
+        if(item.getCategoryId() != null) newItemDto.setCategoryId(item.getCategoryId());
+        if(item.getItemType() != null) newItemDto.setItemType(item.getItemType());
+        if(item.getDateTzSensitive() != null) newItemDto.setDateTzSensitive(item.getDateTzSensitive());
+        if(item.getDateTzSensitiveEnd() != null) newItemDto.setDateTzSensitiveEnd(item.getDateTzSensitiveEnd());
+        if(item.getTimeSensitiveFlag() != null) newItemDto.setTimeSensitiveFlag(item.getTimeSensitiveFlag());
+        if(item.getDateRangeFlag() != null) newItemDto.setDateRangeFlag(item.getDateRangeFlag());
+        if(item.getDateTzInsensitive() != null) newItemDto.setDateTzInsensitive(item.getDateTzInsensitive());
+        if(item.getDateTzInsensitiveEnd()!= null) newItemDto.setDateTzInsensitiveEnd(item.getDateTzInsensitiveEnd());
+        if(item.getPermissionLevel() != null) newItemDto.setPermissionLevel(item.getPermissionLevel());
+        if(item.getCreatedById() != null) newItemDto.setCreatedById(item.getCreatedById());
+        if(item.getLastModifiedById() != null) newItemDto.setLastModifiedById(item.getLastModifiedById());
+        if(item.getCreatedAt() != null) newItemDto.setCreatedAt(item.getCreatedAt());
+        if(item.getActive() != null) newItemDto.setActive(item.getActive());
         return newItemDto;
     }
 }

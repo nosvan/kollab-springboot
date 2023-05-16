@@ -1,6 +1,6 @@
 package com.kollab.service;
 
-import com.kollab.dto.UserDto;
+import com.kollab.dto.user.UserDto;
 import com.kollab.entity.Role;
 import com.kollab.entity.User;
 import com.kollab.repository.RoleRepository;

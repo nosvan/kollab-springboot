@@ -1,4 +1,4 @@
-package com.kollab.dto;
+package com.kollab.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
