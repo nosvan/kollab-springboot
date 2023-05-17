@@ -4,6 +4,7 @@ import com.kollab.dto.item.ItemDeleteDto;
 import com.kollab.dto.item.ItemDto;
 import com.kollab.dto.item.ItemUpdateDto;
 import com.kollab.entity.item.Item;
+import com.kollab.entity.list.Category;
 import com.kollab.repository.ItemRepository;
 import com.kollab.security.CustomUserDetails;
 import org.springframework.context.annotation.Configuration;
@@ -38,11 +39,14 @@ public class ItemService {
         }
     }
 
+    public List<Item> getItems(Category category, String categoryId){
+        return itemRepository.findByCategoryAndCategoryId(category, Long.valueOf(categoryId));
+    }
+
     public ItemDto saveItem(ItemDto itemDto) {
         CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Item itemToSave = mapDtoToItem(itemDto);
         itemToSave.setCreatedById(customUserDetails.getId());
-        itemToSave.setActive(true);
         validateItem(itemToSave);
         return mapItemToItemDto(itemRepository.save(itemToSave));
     }

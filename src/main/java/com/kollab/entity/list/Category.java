@@ -1,4 +1,4 @@
-package com.kollab.entity;
+package com.kollab.entity.list;
 
 public enum Category {
     LIST

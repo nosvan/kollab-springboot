@@ -1,6 +1,6 @@
 package com.kollab.dto.item;
 
-import com.kollab.entity.Category;
+import com.kollab.entity.list.Category;
 import com.kollab.entity.item.ItemType;
 import com.kollab.entity.item.VisibilityLevel;
 import jakarta.validation.constraints.NotNull;

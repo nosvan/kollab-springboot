@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 import java.util.List;
@@ -27,6 +28,7 @@ public class KollabList {
     @Column(name="owner_id")
     private Long ownerId;
     private String passcode;
+    @CreationTimestamp
     @Column(name="created_at")
     private Date createdAt;
     @OneToMany(cascade = CascadeType.ALL)

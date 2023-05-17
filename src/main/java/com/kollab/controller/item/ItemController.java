@@ -19,7 +19,7 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
-    @GetMapping("/api/item/getallown")
+    @GetMapping("/api/item/get-all-own")
     public ResponseEntity<?> getAllItems() throws Exception {
         try {
             System.out.println("in own controller - api/item/getallown");

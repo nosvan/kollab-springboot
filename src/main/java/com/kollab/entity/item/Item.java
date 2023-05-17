@@ -1,6 +1,6 @@
 package com.kollab.entity.item;
 
-import com.kollab.entity.Category;
+import com.kollab.entity.list.Category;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,21 +33,17 @@ public class Item {
     @Column(name = "category_id")
     private Long categoryId;
     @Enumerated(EnumType.STRING)
-    @ColumnDefault("'GENERAL'")
     @Column(name = "item_type")
-    private ItemType itemType;
+    private ItemType itemType = ItemType.GENERAL;
     @Nullable
     @Column(name = "date_tz_sensitive")
     private Date dateTzSensitive;
     @Nullable
     @Column(name = "date_tz_sensitive_end")
     private Date dateTzSensitiveEnd;
-    @ColumnDefault("'false'")
     @Column(name = "time_sensitive_flag")
-    private Boolean timeSensitiveFlag;
-    @ColumnDefault("'false'")
-    @Column(name = "date_range_flag")
-    private Boolean dateRangeFlag;
+    private Boolean timeSensitiveFlag = false;
+    private Boolean dateRangeFlag = false;
     @Nullable
     @Column(name = "date_tz_insensitive")
     private String dateTzInsensitive;
@@ -55,9 +51,8 @@ public class Item {
     @Column(name = "date_tz_insensitive_end")
     private String dateTzInsensitiveEnd;
     @Enumerated(EnumType.STRING)
-    @ColumnDefault("'PUBLIC'")
     @Column(name = "permission_level")
-    private VisibilityLevel permissionLevel;
+    private VisibilityLevel permissionLevel = VisibilityLevel.PUBLIC;
     @Column(name = "created_by_id")
     private Long createdById;
     @Column(name = "last_modified_by_id")
@@ -69,6 +64,5 @@ public class Item {
     @JoinColumn(name="item_id", referencedColumnName = "id")
     @Column(name = "item_permissions")
     private List<ItemPermission> itemPermissions;
-    @ColumnDefault("'true'")
-    private Boolean active;
+    private Boolean active = true;
 }
