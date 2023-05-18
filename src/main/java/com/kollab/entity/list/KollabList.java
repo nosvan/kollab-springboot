@@ -37,5 +37,4 @@ public class KollabList {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="category_id", referencedColumnName = "id")
     private List<Item> items;
-
 }

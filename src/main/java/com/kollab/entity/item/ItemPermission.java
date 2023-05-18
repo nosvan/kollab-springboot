@@ -22,14 +22,8 @@ public class ItemPermission {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name="id", referencedColumnName = "item_id")
-//    private Item item;
     @Column(name = "item_id")
     private Long itemId;
-//    @OneToOne
-//    @JoinColumn(name="id", referencedColumnName = "user_id")
-//    private User user;
     @Column(name = "user_id")
     private Long userId;
     @CreationTimestamp

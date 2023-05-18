@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,9 +61,9 @@ public class Item {
     @CreationTimestamp
     @Column(name = "created_at")
     private Date createdAt;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="item_id", referencedColumnName = "id")
-    @Column(name = "item_permissions")
-    private List<ItemPermission> itemPermissions;
     private Boolean active = true;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "item_id")
+    private List<ItemPermission> itemPermissions = new ArrayList<>();
+
 }

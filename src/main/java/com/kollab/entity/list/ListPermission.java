@@ -26,14 +26,8 @@ public class ListPermission {
     private Long id;
     @Column(name="list_id")
     private Long listId;
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "id", referencedColumnName = "list_id")
-//    private KollabList list;
     @Column(name="user_id")
     private Long userId;
-//    @OneToOne
-//    @JoinColumn(name="id", referencedColumnName = "user_id")
-//    private User user;
     @Enumerated(EnumType.STRING)
     private AccessLevel permission = AccessLevel.PUBLIC;
     @CreationTimestamp

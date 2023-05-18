@@ -2,7 +2,9 @@ package com.kollab.service;
 
 import com.kollab.dto.list.ListDeleteDto;
 import com.kollab.dto.list.ListDto;
+import com.kollab.dto.list.ListEditPasscodeDto;
 import com.kollab.dto.list.ListUpdateDto;
+import com.kollab.dto.user.UsersWithPermissionForListDto;
 import com.kollab.entity.item.AccessLevel;
 import com.kollab.entity.list.KollabList;
 import com.kollab.entity.list.ListPermission;
@@ -25,6 +27,7 @@ public class ListService {
         this.listRepository = listRepository;
         this.listPermissionRepository = listPermissionRepository;
     }
+
 
     public List<ListDto> getOwnLists(){
         CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -56,6 +59,17 @@ public class ListService {
         if(listToUpdate.isPresent()){
             KollabList list = listToUpdate.get();
             mapListUpdateDtoToList(list, listUpdateDto);
+            listRepository.save(list);
+        } else {
+            throw new Exception("Error updating list");
+        }
+    }
+
+    public void editPasscode(ListEditPasscodeDto listEditPasscodeDto) throws Exception {
+        Optional<KollabList> listToUpdate = listRepository.findById(listEditPasscodeDto.getListId());
+        if(listToUpdate.isPresent() && listToUpdate.get().getPasscode().equals(listEditPasscodeDto.getOldPasscode())){
+            KollabList list = listToUpdate.get();
+            list.setPasscode(listEditPasscodeDto.getPasscode());
             listRepository.save(list);
         } else {
             throw new Exception("Error updating list");
@@ -96,14 +110,12 @@ public class ListService {
         listDto.setId(list.getId());
         listDto.setName(list.getName());
         listDto.setDescription(list.getDescription());
-        listDto.setOwnerId(list.getOwnerId());
-        listDto.setPasscode(list.getPasscode());
         listDto.setCreatedAt(list.getCreatedAt());
         return listDto;
     }
 
     private List<ListDto> mapListToListsDto(List<KollabList> list){
-        List<ListDto> listsDto = new ArrayList<ListDto>();
+        List<ListDto> listsDto = new ArrayList<>();
         for(KollabList l : list){
             listsDto.add(mapListToListDto(l));
         }

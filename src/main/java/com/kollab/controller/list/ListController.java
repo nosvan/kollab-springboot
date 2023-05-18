@@ -1,13 +1,9 @@
 package com.kollab.controller.list;
 
-import com.kollab.dto.list.ListDeleteDto;
-import com.kollab.dto.list.ListDto;
-import com.kollab.dto.item.ItemDeleteDto;
-import com.kollab.dto.list.ListPermissionDto;
-import com.kollab.dto.list.ListUpdateDto;
+import com.kollab.dto.list.*;
+import com.kollab.dto.user.UsersWithPermissionForListDto;
 import com.kollab.entity.item.Item;
 import com.kollab.entity.list.Category;
-import com.kollab.entity.list.KollabList;
 import com.kollab.service.ItemService;
 import com.kollab.service.ListPermissionService;
 import com.kollab.service.ListService;
@@ -59,6 +55,7 @@ public class ListController {
         }
     }
 
+
     @PostMapping("/api/list/join")
     public ResponseEntity<?> joinList(@RequestBody @Valid ListPermissionDto listPermissionDto){
         System.out.println("in list controller /api/list/join");
@@ -82,10 +79,21 @@ public class ListController {
         }
     }
 
-    @DeleteMapping("/api/list/delete")
-    public ResponseEntity<?> deleteItem(@RequestBody @Valid ListDeleteDto listDeleteDto){
+    @PostMapping("/api/list/edit-passcode")
+    public ResponseEntity<?> updateList(@RequestBody @Valid ListEditPasscodeDto listEditPasscodeDto){
         try {
-            System.out.println("in item controller - api/list/delete");
+            System.out.println("in list controller /api/list/edit-passcode");
+            listService.editPasscode(listEditPasscodeDto);
+            return new ResponseEntity<>("List passcode updated", HttpStatus.OK);
+        } catch (Exception exception){
+            return new ResponseEntity<>("Error updating list", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/api/list/delete")
+    public ResponseEntity<?> deleteList(@RequestBody @Valid ListDeleteDto listDeleteDto){
+        try {
+            System.out.println("in list controller - api/list/delete");
             listService.deleteList(listDeleteDto);
             return new ResponseEntity<>("List deleted", HttpStatus.OK);
         } catch (Exception exception){
