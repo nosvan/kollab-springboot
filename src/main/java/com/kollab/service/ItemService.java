@@ -1,30 +1,46 @@
 package com.kollab.service;
 
-import com.kollab.dto.item.ItemDeleteDto;
 import com.kollab.dto.item.ItemDto;
+import com.kollab.dto.item.ItemPermissionDto;
 import com.kollab.dto.item.ItemUpdateDto;
+import com.kollab.entity.User;
 import com.kollab.entity.item.Item;
+import com.kollab.entity.item.ItemPermission;
+import com.kollab.entity.item.VisibilityLevel;
 import com.kollab.entity.list.Category;
+import com.kollab.repository.ItemPermissionRepository;
 import com.kollab.repository.ItemRepository;
 import com.kollab.security.CustomUserDetails;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Configuration
 public class ItemService {
     private final ItemRepository itemRepository;
+    private final ItemPermissionRepository itemPermissionRepository;
 
-    public ItemService(ItemRepository itemRepository) {
+    public ItemService(ItemRepository itemRepository, ItemPermissionRepository itemPermissionRepository) {
         this.itemRepository = itemRepository;
+        this.itemPermissionRepository = itemPermissionRepository;
     }
 
     public Item getItem(String itemId) throws Exception {
         Optional<Item> item = itemRepository.findById(Long.valueOf(itemId));
         if(item.isPresent()){
             return item.get();
+        } else {
+            throw new Exception("Error getting items");
+        }
+    }
+
+    public List<ItemPermissionDto> getItemPermissions(String itemId) throws Exception {
+        Optional<Item> item = itemRepository.findById(Long.valueOf(itemId));
+        if(item.isPresent()){
+            return ItemPermissionService.mapItemPermissionToItemPermissionDto(item.get().getItemPermissions());
         } else {
             throw new Exception("Error getting items");
         }
@@ -43,12 +59,24 @@ public class ItemService {
         return itemRepository.findByCategoryAndCategoryId(category, Long.valueOf(categoryId));
     }
 
-    public ItemDto saveItem(ItemDto itemDto) {
+    public ItemDto createItem(ItemDto itemDto) throws Exception {
         CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Item itemToSave = mapDtoToItem(itemDto);
-        itemToSave.setCreatedById(customUserDetails.getId());
-        validateItem(itemToSave);
-        return mapItemToItemDto(itemRepository.save(itemToSave));
+        Item itemToCreate = mapDtoToItem(itemDto);
+        itemToCreate.setCreatedById(customUserDetails.getId());
+        validateItem(itemToCreate);
+        Item item =  itemRepository.save(itemToCreate);
+        if(item.getPermissionLevel().equals(VisibilityLevel.PRIVATE)){
+            ItemPermission itemPermission = new ItemPermission();
+            itemPermission.setUserId(itemToCreate.getCreatedById());
+            itemPermission.setItem(item);
+            itemPermissionRepository.save(itemPermission);
+        }
+        Optional<Item> itemToReturn = itemRepository.findById(item.getId());
+        if(itemToReturn.isPresent()){
+            return mapItemToItemDto(itemToReturn.get());
+        } else {
+            throw new Exception("Error creating item");
+        }
     }
 
     public void updateItem(ItemUpdateDto itemUpdateDto) throws Exception{

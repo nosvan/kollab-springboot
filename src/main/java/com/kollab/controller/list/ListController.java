@@ -1,7 +1,7 @@
 package com.kollab.controller.list;
 
 import com.kollab.dto.list.*;
-import com.kollab.dto.user.UsersWithPermissionForListDto;
+import com.kollab.dto.user.UserDto;
 import com.kollab.entity.item.Item;
 import com.kollab.entity.list.Category;
 import com.kollab.service.ItemService;
@@ -55,11 +55,26 @@ public class ListController {
         }
     }
 
+    @GetMapping("/api/list/get-users")
+    public ResponseEntity<?> getListUsers(@RequestParam String listId){
+        System.out.println("in list controller /api/list/get-users");
+        try {
+            List<UserDto> usersDto = listService.getListUsers(Long.valueOf(listId));
+            return new ResponseEntity<>(usersDto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error getting lists items", HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     @PostMapping("/api/list/join")
-    public ResponseEntity<?> joinList(@RequestBody @Valid ListPermissionDto listPermissionDto){
+    public ResponseEntity<?> joinList(@RequestBody @Valid ListJoinDto listJoinDto) throws Exception {
         System.out.println("in list controller /api/list/join");
-        return new ResponseEntity<>(listPermissionService.joinList(listPermissionDto), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(listPermissionService.joinList(listJoinDto), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error joining list", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/api/list/create")

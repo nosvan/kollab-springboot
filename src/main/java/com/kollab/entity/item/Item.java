@@ -1,15 +1,14 @@
 package com.kollab.entity.item;
 
 import com.kollab.entity.list.Category;
+import com.kollab.entity.list.KollabList;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +17,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@ToString
 @Entity
 @Table(name="item")
 public class Item {
@@ -57,13 +58,15 @@ public class Item {
     @Column(name = "created_by_id")
     private Long createdById;
     @Column(name = "last_modified_by_id")
+    @Nullable
     private Long lastModifiedById;
     @CreationTimestamp
     @Column(name = "created_at")
     private Date createdAt;
     private Boolean active = true;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "item_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "item")
     private List<ItemPermission> itemPermissions = new ArrayList<>();
-
+    @ManyToOne
+    @JoinColumn(name = "list_id")
+    private KollabList list;
 }

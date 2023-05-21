@@ -24,8 +24,9 @@ public class ListPermission {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    @Column(name="list_id")
-    private Long listId;
+    @ManyToOne
+    @JoinColumn(name="list_id")
+    private KollabList list;
     @Column(name="user_id")
     private Long userId;
     @Enumerated(EnumType.STRING)

@@ -31,10 +31,8 @@ public class KollabList {
     @CreationTimestamp
     @Column(name="created_at")
     private Date createdAt;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="list_id", referencedColumnName = "id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "list")
     private List<ListPermission> listPermissions;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="category_id", referencedColumnName = "id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "list")
     private List<Item> items;
 }

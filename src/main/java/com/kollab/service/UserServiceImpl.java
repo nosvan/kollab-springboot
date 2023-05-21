@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
         if(role == null){
             role = checkRoleExist();
         }
-        newUser.setRoles(Arrays.asList(role));
+        newUser.setRoles(List.of(role));
         userRepository.save(newUser);
     }
 
@@ -49,13 +49,14 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> findAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                .map(this::mapUserToUserDto)
+                .map(UserServiceImpl::mapUserToUserDto)
                 .collect(Collectors.toList());
     }
 
-    public UserDto mapUserToUserDto(User user){
+    public static UserDto mapUserToUserDto(User user){
         UserDto userDto = new UserDto();
         String[] name = user.getName().split(",");
+        userDto.setId(user.getId());
         userDto.setFirstName(name[0]);
         userDto.setLastName(name[1]);
         userDto.setEmail(user.getEmail());

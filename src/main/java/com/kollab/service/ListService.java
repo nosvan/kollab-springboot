@@ -4,12 +4,14 @@ import com.kollab.dto.list.ListDeleteDto;
 import com.kollab.dto.list.ListDto;
 import com.kollab.dto.list.ListEditPasscodeDto;
 import com.kollab.dto.list.ListUpdateDto;
-import com.kollab.dto.user.UsersWithPermissionForListDto;
+import com.kollab.dto.user.UserDto;
+import com.kollab.entity.User;
 import com.kollab.entity.item.AccessLevel;
 import com.kollab.entity.list.KollabList;
 import com.kollab.entity.list.ListPermission;
 import com.kollab.repository.ListPermissionRepository;
 import com.kollab.repository.ListRepository;
+import com.kollab.repository.UserRepository;
 import com.kollab.security.CustomUserDetails;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,14 +20,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kollab.service.UserServiceImpl.mapUserToUserDto;
+
 @Configuration
 public class ListService {
     private final ListRepository listRepository;
     private final ListPermissionRepository listPermissionRepository;
+    private final UserRepository userRepository;
 
-    public ListService(ListRepository listRepository, ListPermissionRepository listPermissionRepository){
+    public ListService(ListRepository listRepository, ListPermissionRepository listPermissionRepository, UserRepository userRepository){
         this.listRepository = listRepository;
         this.listPermissionRepository = listPermissionRepository;
+        this.userRepository = userRepository;
     }
 
 
@@ -41,13 +47,28 @@ public class ListService {
         return mapListToListsDto(lists);
     }
 
+    public List<UserDto> getListUsers(Long listId) throws Exception {
+        Optional<KollabList> list = listRepository.findById(listId);
+        if(list.isPresent()){
+            List<ListPermission> listPermissions = list.get().getListPermissions();
+            List<UserDto> userDtoListToReturn = new ArrayList<>();
+            for(ListPermission lp : listPermissions){
+                Optional<User> user = userRepository.findById(lp.getUserId());
+                user.ifPresent(value -> userDtoListToReturn.add(mapUserToUserDto(value)));
+            }
+            return userDtoListToReturn;
+        } else {
+            throw new Exception("Error getting list users");
+        }
+    }
+
     public ListDto createList(ListDto listDto){
         KollabList list = mapListDtoToList(listDto);
         CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         list.setOwnerId(customUserDetails.getId());
         list = listRepository.save(list);
         ListPermission listPermission = new ListPermission();
-        listPermission.setListId(list.getId());
+        listPermission.setList(list);
         listPermission.setUserId(list.getOwnerId());
         listPermission.setPermission(AccessLevel.ADMIN);
         listPermissionRepository.save(listPermission);

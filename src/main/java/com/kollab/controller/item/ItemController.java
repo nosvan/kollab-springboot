@@ -2,6 +2,7 @@ package com.kollab.controller.item;
 
 import com.kollab.dto.item.ItemDeleteDto;
 import com.kollab.dto.item.ItemDto;
+import com.kollab.dto.item.ItemPermissionDto;
 import com.kollab.dto.item.ItemUpdateDto;
 import com.kollab.entity.item.Item;
 import com.kollab.service.ItemService;
@@ -41,11 +42,36 @@ public class ItemController {
         }
     }
 
+    @GetMapping("/api/item/get-users")
+    public ResponseEntity<?> getItemUsers(@RequestParam String itemId) throws Exception {
+        try {
+            System.out.println("in own controller - api/item/get-users");
+            Item item = itemService.getItem(itemId);
+            return new ResponseEntity<>(item, HttpStatus.OK);
+        } catch (Exception exception) {
+            return new ResponseEntity<>("Error getting items", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/api/item/get-permissions")
+    public ResponseEntity<?> getItemPermissions(@RequestParam String itemId) throws Exception {
+        try {
+            System.out.println("in own controller - api/item/get-permissions");
+            List<ItemPermissionDto> itemPermissionDtoList = itemService.getItemPermissions(itemId);
+            return new ResponseEntity<>(itemPermissionDtoList, HttpStatus.OK);
+        } catch (Exception exception) {
+            return new ResponseEntity<>("Error getting item permissions", HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/api/item/create")
     public ResponseEntity<?> createItem(@RequestBody @Valid ItemDto item){
         System.out.println("in own controller - api/item/create");
-        ItemDto itemDtoToReturn = itemService.saveItem(item);
-        return new ResponseEntity<>(itemDtoToReturn, HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(itemService.createItem(item), HttpStatus.OK) ;
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error creating item", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/api/item/update")

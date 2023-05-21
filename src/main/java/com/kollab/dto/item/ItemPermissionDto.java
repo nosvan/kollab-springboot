@@ -1,8 +1,5 @@
-package com.kollab.dto.list;
+package com.kollab.dto.item;
 
-import com.kollab.entity.item.AccessLevel;
-import com.kollab.entity.list.KollabList;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,11 +11,9 @@ import java.util.Date;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ListPermissionDto {
+public class ItemPermissionDto {
     private Long id;
-    @NotNull
-    private Long listId;
+    private Long itemId;
     private Long userId;
-    private AccessLevel permission;
     private Date createdAt;
 }
