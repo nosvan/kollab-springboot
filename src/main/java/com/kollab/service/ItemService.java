@@ -60,9 +60,11 @@ public class ItemService {
     }
 
     public ItemDto createItem(ItemDto itemDto) throws Exception {
-        CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Item itemToCreate = mapDtoToItem(itemDto);
-        itemToCreate.setCreatedById(customUserDetails.getId());
+        if(itemDto.getCreatedById() == null){
+            Long id = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+            itemToCreate.setCreatedById(id);
+        }
         validateItem(itemToCreate);
         Item item =  itemRepository.save(itemToCreate);
         if(item.getPermissionLevel().equals(VisibilityLevel.PRIVATE)){

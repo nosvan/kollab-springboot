@@ -4,10 +4,8 @@ import com.kollab.entity.list.Category;
 import com.kollab.entity.item.ItemType;
 import com.kollab.entity.item.VisibilityLevel;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -15,6 +13,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ItemDto implements Serializable {
     private Long id;
     @NotNull
