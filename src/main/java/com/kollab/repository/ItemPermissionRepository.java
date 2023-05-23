@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ItemPermissionRepository extends JpaRepository<ItemPermission, Long> {
     List<ItemPermission> findByItemId(Long itemId);
+
 }

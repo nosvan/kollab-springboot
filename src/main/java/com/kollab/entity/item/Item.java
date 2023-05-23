@@ -65,8 +65,15 @@ public class Item {
     private Date createdAt;
     private Boolean active = true;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "item")
+    @ToString.Exclude
     private List<ItemPermission> itemPermissions = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "list_id")
     private KollabList list;
+    public void removeAllPermissions(){
+        setItemPermissions(null);
+    }
+    public void removePermissions(List<Long> ids){
+        setItemPermissions(getItemPermissions().stream().filter(itemPermission-> !ids.contains(itemPermission.getId())).toList());
+    }
 }

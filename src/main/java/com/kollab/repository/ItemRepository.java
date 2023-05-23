@@ -1,6 +1,7 @@
 package com.kollab.repository;
 
 import com.kollab.entity.item.Item;
+import com.kollab.entity.item.ItemPermission;
 import com.kollab.entity.list.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 

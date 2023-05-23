@@ -8,18 +8,18 @@ import com.kollab.repository.ItemPermissionRepository;
 import com.kollab.repository.ItemRepository;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Order;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.sql.DataSource;
 import java.sql.Date;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +31,6 @@ import static org.junit.Assert.fail;
 public class ItemRepositoryUnitTests {
     @Autowired
     private DataSource dataSource;
-
     @Autowired
     private ItemRepository itemRepository;
     @Autowired
@@ -39,7 +38,7 @@ public class ItemRepositoryUnitTests {
 
     @Test
     @Order(1)
-    public void ItemRepository_SaveOwnItem_ReturnsSavedOwnItem(){
+    public void ItemRepository_SaveOwnItem_ReturnsSavedOwnItemAndEmptyPermissions(){
         Item item = Item.builder()
                 .id(1L)
                 .name("unit test")
@@ -52,6 +51,7 @@ public class ItemRepositoryUnitTests {
         Assertions.assertThat(savedItem.getCreatedById()).isNotNull();
         Assertions.assertThat(savedItem.getCreatedAt()).isNotNull();
         Assertions.assertThat(savedItem.getCreatedById()).isEqualTo(600L);
+        Assertions.assertThat(savedItem.getItemPermissions()).isNull();
     }
 
     @Test
@@ -126,5 +126,48 @@ public class ItemRepositoryUnitTests {
         itemRepository.deleteById(item2.getId());
         Optional<ItemPermission> itemPermissionList = itemPermissionRepository.findById(item2.getItemPermissions().get(0).getItem().getId());
         Assertions.assertThat(itemPermissionList).isEmpty();
+    }
+
+    @Test
+    @Order(5)
+    public void ItemRepository_SaveItemWithPermissionsAndThenDeleteItemPermission_CheckIfPermissionsDeleted(){
+        //Build item and its two permissions
+        Item item = Item.builder()
+                .name("unit test")
+                .itemType(ItemType.GENERAL)
+                .permissionLevel(VisibilityLevel.PRIVATE)
+                .createdAt(Date.from(Instant.now()))
+                .createdById(600L).build();
+        ItemPermission itemPermission = ItemPermission.builder()
+                .userId(item.getCreatedById())
+                .createdAt(Date.from(Instant.now()))
+                .item(item)
+                .build();
+        item.setItemPermissions(List.of(itemPermission));
+        Item item2 = itemRepository.save(item);
+        ItemPermission itemPermission1 = item2.getItemPermissions().get(0);
+        item2.removeAllPermissions();
+        itemPermissionRepository.deleteById(itemPermission1.getId());
+        List<ItemPermission> itemPermissionList = itemPermissionRepository.findAll();
+        Assertions.assertThat(itemPermissionList.size()).isEqualTo(0);
+    }
+
+    @Test
+    @Order(6)
+    public void ItemRepository_SaveItemThenUpdateItem_ReturnItemWithUpdatedName(){
+        //Build item and its two permissions
+        Item item = Item.builder()
+                .name("unit test")
+                .itemType(ItemType.GENERAL)
+                .permissionLevel(VisibilityLevel.PRIVATE)
+                .createdAt(Date.from(Instant.now()))
+                .createdById(600L).build();
+        Item item2 = itemRepository.save(item);
+        Optional<Item> item3 = itemRepository.findById(item2.getId());
+        item3.ifPresentOrElse(i->Assertions.assertThat(i.getName()).isEqualTo("unit test"), Assert::fail);
+        item3.ifPresentOrElse(i->i.setName("unit test updated"), Assert::fail);
+        item3.ifPresentOrElse(i->itemRepository.save(i), Assert::fail);
+        Optional<Item> item4 = itemRepository.findById(item2.getId());
+        item4.ifPresentOrElse(i->Assertions.assertThat(i.getName()).isEqualTo("unit test updated"), Assert::fail);
     }
 }

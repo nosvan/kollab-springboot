@@ -3,10 +3,7 @@ package com.kollab.entity.list;
 import com.kollab.entity.User;
 import com.kollab.entity.item.AccessLevel;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -16,6 +13,7 @@ import java.util.List;
 @Entity
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="list_permission",
