@@ -2,10 +2,8 @@ package com.kollab.dto.list;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,6 +11,7 @@ import java.util.Date;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ListDto implements Serializable {
     private Long id;
     @NotNull

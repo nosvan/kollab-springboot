@@ -64,8 +64,10 @@ public class ListService {
 
     public ListDto createList(ListDto listDto){
         KollabList list = mapListDtoToList(listDto);
-        CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        list.setOwnerId(customUserDetails.getId());
+        if(listDto.getOwnerId() == null){
+            CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            list.setOwnerId(customUserDetails.getId());
+        }
         list = listRepository.save(list);
         ListPermission listPermission = new ListPermission();
         listPermission.setList(list);
@@ -75,23 +77,23 @@ public class ListService {
         return mapListToListDto(list);
     }
 
-    public void updateList(ListUpdateDto listUpdateDto) throws Exception {
+    public ListDto updateList(ListUpdateDto listUpdateDto) throws Exception {
         Optional<KollabList> listToUpdate = listRepository.findById(listUpdateDto.getId());
         if(listToUpdate.isPresent()){
             KollabList list = listToUpdate.get();
             mapListUpdateDtoToList(list, listUpdateDto);
-            listRepository.save(list);
+            return mapListToListDto(listRepository.save(list));
         } else {
             throw new Exception("Error updating list");
         }
     }
 
-    public void editPasscode(ListEditPasscodeDto listEditPasscodeDto) throws Exception {
+    public ListDto editPasscode(ListEditPasscodeDto listEditPasscodeDto) throws Exception {
         Optional<KollabList> listToUpdate = listRepository.findById(listEditPasscodeDto.getListId());
         if(listToUpdate.isPresent() && listToUpdate.get().getPasscode().equals(listEditPasscodeDto.getOldPasscode())){
             KollabList list = listToUpdate.get();
             list.setPasscode(listEditPasscodeDto.getPasscode());
-            listRepository.save(list);
+            return mapListToListDto(listRepository.save(list));
         } else {
             throw new Exception("Error updating list");
         }

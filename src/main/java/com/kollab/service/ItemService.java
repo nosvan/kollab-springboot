@@ -82,12 +82,15 @@ public class ItemService {
     }
 
     public void updateItem(ItemUpdateDto itemUpdateDto) throws Exception{
-        CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(itemUpdateDto.getCreatedById() == null){
+            Long id = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+            itemUpdateDto.setCreatedById(id);
+        }
         Optional<Item> itemToUpdate = itemRepository.findById(itemUpdateDto.getId());
         if(itemToUpdate.isPresent()){
             Item item = itemToUpdate.get();
             mapUpdateDtoToItem(item, itemUpdateDto);
-            item.setLastModifiedById(customUserDetails.getId());
+            item.setLastModifiedById(itemUpdateDto.getId());
             itemRepository.save(item);
         } else {
             throw new Exception("Error updating item");
@@ -95,9 +98,9 @@ public class ItemService {
     }
 
     public void deleteItem(String itemId) throws Exception {
-        Optional<Item> itemToUpdate = itemRepository.findById(Long.valueOf(itemId));
-        if(itemToUpdate.isPresent()){
-            itemRepository.deleteById(itemToUpdate.get().getId());
+        Optional<Item> itemToDelete = itemRepository.findById(Long.valueOf(itemId));
+        if(itemToDelete.isPresent()){
+            itemRepository.deleteById(itemToDelete.get().getId());
         } else {
             throw new Exception("Error deleting item");
         }
