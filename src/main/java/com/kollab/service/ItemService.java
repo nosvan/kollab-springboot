@@ -95,6 +95,7 @@ public class ItemService {
         if(itemToUpdate.isPresent()){
             Item item = itemToUpdate.get();
             mapUpdateDtoToItem(item, itemUpdateDto);
+            validateItem(item);
             return mapItemToItemDto(itemRepository.save(item));
         } else {
             throw new Exception("Error updating item");
