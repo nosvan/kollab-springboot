@@ -104,6 +104,17 @@ public class ItemServiceUnitTests {
                 .timeSensitiveFlag(false)
                 .permissionLevel(VisibilityLevel.PUBLIC)
                 .build();
+        Item item2 = Item.builder()
+                .id(1L)
+                .name("unit test")
+                .createdById(600L)
+                .itemType(ItemType.MEETING)
+                .createdAt(Date.from(Instant.now()))
+                .active(true)
+                .dateRangeFlag(false)
+                .timeSensitiveFlag(false)
+                .permissionLevel(VisibilityLevel.PUBLIC)
+                .build();
         ItemUpdateDto itemUpdateDto = ItemUpdateDto.builder()
                 .id(1L)
                 .name("unit test")
@@ -116,8 +127,9 @@ public class ItemServiceUnitTests {
                 .permissionLevel(VisibilityLevel.PUBLIC)
                 .build();
         when(itemRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(item));
+        when(itemRepository.save(Mockito.any())).thenReturn(item2);
         try{
-            itemService.updateItem(itemUpdateDto);
+            Assertions.assertThat(itemService.updateItem(itemUpdateDto).getItemType()).isEqualTo(ItemType.MEETING);
         } catch (Exception e){
             Assert.fail();
         }

@@ -78,8 +78,8 @@ public class ItemController {
     public ResponseEntity<?> updateItem(@RequestBody @Valid ItemUpdateDto item){
         try {
             System.out.println("in item controller - api/item/update");
-            itemService.updateItem(item);
-            return new ResponseEntity<>("Item updated", HttpStatus.OK);
+            ItemDto itemToReturn = itemService.updateItem(item);
+            return new ResponseEntity<>(itemToReturn, HttpStatus.OK);
         } catch (Exception exception){
             return new ResponseEntity<>("Error updating item", HttpStatus.BAD_REQUEST);
         }

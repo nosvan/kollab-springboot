@@ -14,9 +14,9 @@ import com.kollab.security.CustomUserDetails;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Configuration
 public class ItemService {
@@ -49,14 +49,19 @@ public class ItemService {
     public List<Item> getItems() throws Exception {
         try {
             CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            return itemRepository.findByCreatedByIdAndCategoryIdIsNull(customUserDetails.getId());
+            List<Item> items = itemRepository.findByCreatedByIdAndCategoryIdIsNull(customUserDetails.getId());
+            sortItemsAscending(items);
+            return items;
         } catch (Exception exception){
             throw new Exception("Error getting items");
         }
     }
 
     public List<Item> getItems(Category category, String categoryId){
-        return itemRepository.findByCategoryAndCategoryId(category, Long.valueOf(categoryId));
+        List<Item> items = itemRepository.findByCategoryAndCategoryId(category, Long.valueOf(categoryId));
+        List<Item> itemsModifiable = new ArrayList<>(items);
+        sortItemsAscending(itemsModifiable);
+        return itemsModifiable;
     }
 
     public ItemDto createItem(ItemDto itemDto) throws Exception {
@@ -81,7 +86,7 @@ public class ItemService {
         }
     }
 
-    public void updateItem(ItemUpdateDto itemUpdateDto) throws Exception{
+    public ItemDto updateItem(ItemUpdateDto itemUpdateDto) throws Exception{
         if(itemUpdateDto.getCreatedById() == null){
             Long id = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
             itemUpdateDto.setCreatedById(id);
@@ -90,8 +95,7 @@ public class ItemService {
         if(itemToUpdate.isPresent()){
             Item item = itemToUpdate.get();
             mapUpdateDtoToItem(item, itemUpdateDto);
-            item.setLastModifiedById(itemUpdateDto.getId());
-            itemRepository.save(item);
+            return mapItemToItemDto(itemRepository.save(item));
         } else {
             throw new Exception("Error updating item");
         }
@@ -124,7 +128,7 @@ public class ItemService {
         Item newItem = new Item();
         if(itemDto.getId() != null) newItem.setId(itemDto.getId());
         if(itemDto.getName() != null) newItem.setName(itemDto.getName());
-        if(itemDto.getDescription() != null) newItem.setName(itemDto.getDescription());
+        if(itemDto.getDescription() != null) newItem.setDescription(itemDto.getDescription());
         if(itemDto.getCategory() != null) newItem.setCategory(itemDto.getCategory());
         if(itemDto.getCategoryId() != null) newItem.setCategoryId(itemDto.getCategoryId());
         if(itemDto.getItemType() != null) newItem.setItemType(itemDto.getItemType());
@@ -145,7 +149,7 @@ public class ItemService {
     private void mapUpdateDtoToItem(Item item, ItemUpdateDto itemUpdateDto) {
         if(itemUpdateDto.getId() != null) item.setId(itemUpdateDto.getId());
         if(itemUpdateDto.getName() != null) item.setName(itemUpdateDto.getName());
-        if(itemUpdateDto.getDescription() != null) item.setName(itemUpdateDto.getDescription());
+        if(itemUpdateDto.getDescription() != null) item.setDescription(itemUpdateDto.getDescription());
         if(itemUpdateDto.getCategory() != null) item.setCategory(itemUpdateDto.getCategory());
         if(itemUpdateDto.getCategoryId() != null) item.setCategoryId(itemUpdateDto.getCategoryId());
         if(itemUpdateDto.getItemType() != null) item.setItemType(itemUpdateDto.getItemType());
@@ -166,7 +170,7 @@ public class ItemService {
         ItemDto newItemDto = new ItemDto();
         if(item.getId() != null) newItemDto.setId(item.getId());
         if(item.getName() != null) newItemDto.setName(item.getName());
-        if(item.getDescription() != null) newItemDto.setName(item.getDescription());
+        if(item.getDescription() != null) newItemDto.setDescription(item.getDescription());
         if(item.getCategory() != null) newItemDto.setCategory(item.getCategory());
         if(item.getCategoryId() != null) newItemDto.setCategoryId(item.getCategoryId());
         if(item.getItemType() != null) newItemDto.setItemType(item.getItemType());
@@ -182,5 +186,29 @@ public class ItemService {
         if(item.getCreatedAt() != null) newItemDto.setCreatedAt(item.getCreatedAt());
         if(item.getActive() != null) newItemDto.setActive(item.getActive());
         return newItemDto;
+    }
+
+    private void sortItemsAscending(List<Item> items){
+        items.sort((o1, o2) -> {
+            Date o1Date, o2Date;
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            if(o1.getTimeSensitiveFlag()) o1Date = o1.getDateTzSensitive();
+            else {
+                try {
+                    o1Date = formatter.parse(o1.getDateTzInsensitive());
+                } catch (ParseException e) {
+                    o1Date = new Date(0);
+                }
+            }
+            if(o2.getTimeSensitiveFlag()) o2Date = o2.getDateTzSensitive();
+            else {
+                try {
+                    o2Date = formatter.parse(o2.getDateTzInsensitive());
+                } catch (ParseException e) {
+                    o2Date = new Date(0);
+                }
+            }
+            return o1Date.compareTo(o2Date);
+        });
     }
 }
