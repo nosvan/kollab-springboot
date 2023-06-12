@@ -68,7 +68,8 @@ public class ItemController {
     public ResponseEntity<?> createItem(@RequestBody @Valid ItemDto item){
         System.out.println("in own controller - api/item/create");
         try {
-            return new ResponseEntity<>(itemService.createItem(item), HttpStatus.OK) ;
+            ItemDto itemToReturn = itemService.createItem(item);
+            return new ResponseEntity<>(itemToReturn, HttpStatus.OK) ;
         } catch (Exception e) {
             return new ResponseEntity<>("Error creating item", HttpStatus.BAD_REQUEST);
         }

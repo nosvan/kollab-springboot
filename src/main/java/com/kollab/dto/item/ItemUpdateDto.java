@@ -25,6 +25,7 @@ public class ItemUpdateDto implements Serializable {
     private Date dateTzSensitive;
     private Date dateTzSensitiveEnd;
     private Boolean timeSensitiveFlag;
+    private Boolean reoccurringFlag;
     private Boolean dateRangeFlag;
     private String dateTzInsensitive;
     private String dateTzInsensitive_end;

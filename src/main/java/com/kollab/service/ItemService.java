@@ -136,6 +136,7 @@ public class ItemService {
         if(itemDto.getDateTzSensitive() != null) newItem.setDateTzSensitive(itemDto.getDateTzSensitive());
         if(itemDto.getDateTzSensitiveEnd() != null) newItem.setDateTzSensitiveEnd(itemDto.getDateTzSensitiveEnd());
         if(itemDto.getTimeSensitiveFlag() != null) newItem.setTimeSensitiveFlag(itemDto.getTimeSensitiveFlag());
+        if(itemDto.getReoccurringFlag() != null) newItem.setReoccurringFlag(itemDto.getReoccurringFlag());
         if(itemDto.getDateRangeFlag() != null) newItem.setDateRangeFlag(itemDto.getDateRangeFlag());
         if(itemDto.getDateTzInsensitive() != null) newItem.setDateTzInsensitive(itemDto.getDateTzInsensitive());
         if(itemDto.getDateTzInsensitiveEnd() != null) newItem.setDateTzInsensitiveEnd(itemDto.getDateTzInsensitiveEnd());
@@ -157,6 +158,7 @@ public class ItemService {
         if(itemUpdateDto.getDateTzSensitive() != null) item.setDateTzSensitive(itemUpdateDto.getDateTzSensitive());
         if(itemUpdateDto.getDateTzSensitiveEnd() != null) item.setDateTzSensitiveEnd(itemUpdateDto.getDateTzSensitiveEnd());
         if(itemUpdateDto.getTimeSensitiveFlag() != null) item.setTimeSensitiveFlag(itemUpdateDto.getTimeSensitiveFlag());
+        if(itemUpdateDto.getReoccurringFlag() != null) item.setReoccurringFlag(itemUpdateDto.getReoccurringFlag());
         if(itemUpdateDto.getDateRangeFlag() != null) item.setDateRangeFlag(itemUpdateDto.getDateRangeFlag());
         if(itemUpdateDto.getDateTzInsensitive() != null) item.setDateTzInsensitive(itemUpdateDto.getDateTzInsensitive());
         if(itemUpdateDto.getDateTzInsensitive_end() != null) item.setDateTzInsensitiveEnd(itemUpdateDto.getDateTzInsensitive_end());
@@ -178,6 +180,7 @@ public class ItemService {
         if(item.getDateTzSensitive() != null) newItemDto.setDateTzSensitive(item.getDateTzSensitive());
         if(item.getDateTzSensitiveEnd() != null) newItemDto.setDateTzSensitiveEnd(item.getDateTzSensitiveEnd());
         if(item.getTimeSensitiveFlag() != null) newItemDto.setTimeSensitiveFlag(item.getTimeSensitiveFlag());
+        if(item.getReoccurringFlag() != null) newItemDto.setReoccurringFlag(item.getReoccurringFlag());
         if(item.getDateRangeFlag() != null) newItemDto.setDateRangeFlag(item.getDateRangeFlag());
         if(item.getDateTzInsensitive() != null) newItemDto.setDateTzInsensitive(item.getDateTzInsensitive());
         if(item.getDateTzInsensitiveEnd()!= null) newItemDto.setDateTzInsensitiveEnd(item.getDateTzInsensitiveEnd());

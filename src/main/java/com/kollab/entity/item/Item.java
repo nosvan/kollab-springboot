@@ -5,10 +5,8 @@ import com.kollab.entity.list.KollabList;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,6 +43,8 @@ public class Item {
     private Date dateTzSensitiveEnd;
     @Column(name = "time_sensitive_flag")
     private Boolean timeSensitiveFlag = false;
+    @Column(name="reoccurring_flag")
+    private Boolean reoccurringFlag = false;
     private Boolean dateRangeFlag = false;
     @Nullable
     @Column(name = "date_tz_insensitive")

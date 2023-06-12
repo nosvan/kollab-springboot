@@ -1,7 +1,8 @@
 package com.kollab.controller;
 
-import com.kollab.dto.user.UserDto;
+import com.kollab.dto.user.UserCreateDto;
 import com.kollab.entity.User;
+import com.kollab.security.CustomUserDetails;
 import com.kollab.service.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,7 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> RegisterUser(@RequestBody @Valid UserDto registeringUser){
+    public ResponseEntity<?> RegisterUser(@RequestBody @Valid UserCreateDto registeringUser){
         System.out.println("in register controller");
         User existingUser = userServiceImpl.findUserByEmail(registeringUser.getEmail());
         if(existingUser != null){
@@ -50,7 +51,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody UserDto user, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<?> loginUser(@RequestBody UserCreateDto user, HttpServletRequest request, HttpServletResponse response){
         UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(
                 user.getEmail(), user.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
@@ -58,6 +59,7 @@ public class AuthController {
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
         securityContextRepository.saveContext(context, request, response);
-        return new ResponseEntity<>("User signed-in successfully!.", HttpStatus.OK);
+        User userLoggedIn = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        return new ResponseEntity<>(UserServiceImpl.mapUserToUserDto(userLoggedIn), HttpStatus.OK);
     }
 }

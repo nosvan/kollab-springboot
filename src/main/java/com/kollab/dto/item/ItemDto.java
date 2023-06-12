@@ -28,6 +28,8 @@ public class ItemDto implements Serializable {
     @NotNull
     private Boolean timeSensitiveFlag;
     @NotNull
+    private Boolean reoccurringFlag;
+    @NotNull
     private Boolean dateRangeFlag;
     private String dateTzInsensitive;
     private String dateTzInsensitiveEnd;

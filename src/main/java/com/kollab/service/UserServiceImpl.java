@@ -1,5 +1,6 @@
 package com.kollab.service;
 
+import com.kollab.dto.user.UserCreateDto;
 import com.kollab.dto.user.UserDto;
 import com.kollab.entity.Role;
 import com.kollab.entity.User;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(UserDto userDto) {
+    public UserDto saveUser(UserCreateDto userDto) {
         User newUser = new User();
         newUser.setName(userDto.getFirstName() + "," + userDto.getLastName());
         newUser.setEmail(userDto.getEmail());
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
             role = checkRoleExist();
         }
         newUser.setRoles(List.of(role));
-        userRepository.save(newUser);
+        return mapUserToUserDto(userRepository.save(newUser));
     }
 
     @Override
