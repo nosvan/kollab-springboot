@@ -67,7 +67,7 @@ public class Item {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "item")
     @ToString.Exclude
     private List<ItemPermission> itemPermissions = new ArrayList<>();
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "list_id")
     private KollabList list;
     public void removeAllPermissions(){

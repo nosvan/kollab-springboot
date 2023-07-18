@@ -27,7 +27,7 @@ public class SecurityConfiguration {
                 .cors().and().csrf().disable()
                 .httpBasic().disable()
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/register", "/login").permitAll()
+                        .requestMatchers("/register", "/login", "/actuator/**").permitAll()
                         .requestMatchers("/**").fullyAuthenticated())
                 .logout().deleteCookies("SESSION").clearAuthentication(true).invalidateHttpSession(true).logoutSuccessUrl("/logoutSuccess").permitAll();
         return http.build();

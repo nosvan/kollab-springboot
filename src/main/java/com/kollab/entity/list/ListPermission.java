@@ -22,7 +22,7 @@ public class ListPermission {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="list_id")
     private KollabList list;
     @Column(name="user_id")
