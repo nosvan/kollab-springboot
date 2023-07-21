@@ -1,6 +1,7 @@
 package com.kollab.controller;
 
 import com.kollab.dto.user.UserCreateDto;
+import com.kollab.dto.user.UserDto;
 import com.kollab.entity.User;
 import com.kollab.security.CustomUserDetails;
 import com.kollab.service.UserServiceImpl;
@@ -37,6 +38,14 @@ public class AuthController {
     @GetMapping("/logoutSuccess")
     public ResponseEntity<?> logoutSuccess(){
         return new ResponseEntity<>("User logged out", HttpStatus.OK);
+    }
+
+    @GetMapping("/get-current-user")
+    public ResponseEntity<?> getCurrentUser(HttpServletRequest request, HttpServletResponse response){
+        System.out.println("in get current user");
+        User userLoggedIn = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        UserDto userLoginDto = UserServiceImpl.mapUserToUserDto(userLoggedIn);
+        return new ResponseEntity<>(userLoginDto, HttpStatus.OK);
     }
 
     @PostMapping("/register")

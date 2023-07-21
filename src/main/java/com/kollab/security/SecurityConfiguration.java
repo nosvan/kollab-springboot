@@ -1,4 +1,5 @@
 package com.kollab.security;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,6 +11,9 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfiguration {
+    @Value("${cookie-config.cookie-name}")
+    private String cookieName;
+
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {
@@ -29,7 +33,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/register", "/login", "/actuator/**").permitAll()
                         .requestMatchers("/**").fullyAuthenticated())
-                .logout().deleteCookies("SESSION").clearAuthentication(true).invalidateHttpSession(true).logoutSuccessUrl("/logoutSuccess").permitAll();
+                .logout().deleteCookies(cookieName).clearAuthentication(true).invalidateHttpSession(true).logoutSuccessUrl("/logoutSuccess").permitAll();
         return http.build();
     }
 }
