@@ -8,16 +8,16 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 
 @Configuration
 public class CookieConfig {
-    @Value("${cookie-config.domain-name}")
+    @Value("${cookieConfig.domainName}")
     private String domain;
-    @Value("${cookie-config.cookie-name}")
+    @Value("${cookieConfig.cookieName}")
     private String cookieName;
     @Bean
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-        serializer.setDomainName(domain);
+//        serializer.setDomainName(domain);
         serializer.setCookieName(cookieName);
-        serializer.setSameSite("Lax");
+        serializer.setSameSite("None");
         serializer.setCookiePath("/");
         serializer.setUseSecureCookie(true);
         return serializer;

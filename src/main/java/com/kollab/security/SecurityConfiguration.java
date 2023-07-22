@@ -1,4 +1,5 @@
 package com.kollab.security;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfiguration {
-    @Value("${cookie-config.cookie-name}")
+    @Value("${cookieConfig.cookieName}")
     private String cookieName;
 
     @Bean
@@ -33,7 +34,13 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/register", "/login", "/actuator/**").permitAll()
                         .requestMatchers("/**").fullyAuthenticated())
-                .logout().deleteCookies(cookieName).clearAuthentication(true).invalidateHttpSession(true).logoutSuccessUrl("/logoutSuccess").permitAll();
+                .logout()
+                    .deleteCookies(cookieName)
+                    .clearAuthentication(true)
+                    .invalidateHttpSession(true)
+                    .permitAll()
+                    .logoutSuccessHandler((request, response, authentication) -> {response.setStatus(HttpServletResponse.SC_OK);
+        });
         return http.build();
     }
 }
