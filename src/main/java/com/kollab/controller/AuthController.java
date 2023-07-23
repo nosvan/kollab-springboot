@@ -53,7 +53,7 @@ public class AuthController {
         System.out.println("in register controller");
         User existingUser = userServiceImpl.findUserByEmail(registeringUser.getEmail());
         if(existingUser != null){
-            return new ResponseEntity<>("User already exists", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("User already exists", HttpStatus.OK);
         }
         userServiceImpl.saveUser(registeringUser);
         return new ResponseEntity<>("User created", HttpStatus.OK);

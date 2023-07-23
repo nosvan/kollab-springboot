@@ -19,6 +19,7 @@ public class CookieConfig {
         serializer.setCookieName(cookieName);
         serializer.setSameSite("None");
         serializer.setCookiePath("/");
+        serializer.setUseHttpOnlyCookie(true);
         serializer.setUseSecureCookie(true);
         return serializer;
     }
