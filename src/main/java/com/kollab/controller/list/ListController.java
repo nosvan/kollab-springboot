@@ -109,8 +109,8 @@ public class ListController {
     public ResponseEntity<?> deleteList(@RequestBody @Valid ListDeleteDto listDeleteDto){
         try {
             System.out.println("in list controller - api/list/delete");
-            listService.deleteList(listDeleteDto);
-            return new ResponseEntity<>("List deleted", HttpStatus.OK);
+            Long deleteListId = listService.deleteList(listDeleteDto);
+            return new ResponseEntity<>(deleteListId, HttpStatus.OK);
         } catch (Exception exception){
             return new ResponseEntity<>("Error deleting list", HttpStatus.BAD_REQUEST);
         }

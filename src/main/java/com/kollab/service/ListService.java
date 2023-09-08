@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.kollab.service.UserServiceImpl.mapUserToUserDto;
@@ -99,13 +100,15 @@ public class ListService {
         }
     }
 
-    public void deleteList(ListDeleteDto listDeleteDto) throws Exception {
+    public Long deleteList(ListDeleteDto listDeleteDto) throws Exception {
         Optional<KollabList> listToDelete = listRepository.findById(listDeleteDto.getId());
-        if(listToDelete.isPresent()){
-            listRepository.deleteById(listToDelete.get().getId());
-        } else {
-            throw new Exception("Error deleting list");
-        }
+        if(listToDelete.isEmpty()) throw new Exception("Error deleting list");
+        List<ListPermission> permissions = listToDelete.get().getListPermissions();
+        Long userId = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        Optional<ListPermission> userPermission = permissions.stream().filter(p -> Objects.equals(p.getUserId(), userId) && p.getPermission().equals(AccessLevel.ADMIN)).findFirst();
+        if(userPermission.isEmpty()) throw new Exception("User does not have correct permission");
+        listRepository.deleteById(listToDelete.get().getId());
+        return listToDelete.get().getId();
     }
 
     private void mapListUpdateDtoToList(KollabList list, ListUpdateDto listUpdateDto){
